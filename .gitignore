@@ -1,3 +1,7 @@
+upload/*
+.idea/
+*.hdt.index.v1-1
+*.hdt
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

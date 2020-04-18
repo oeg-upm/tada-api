@@ -1,0 +1,39 @@
+Subject Column Annotation
+---
+post:
+  tags:
+  - subject
+  parameters:
+  - name: col_id
+    in: body
+    required: true
+    type: integer
+    description: The id of the subject column (starting from 0).
+  - name: source
+    in: body
+    required: true
+    type: file
+    description: The input file to be annotated
+  - name: alpha
+    in: body
+    required: false
+    type: number
+    default: 0.9
+    description: The alpha value to balance coverage and specificity
+  - name: dbpedia_only
+    in: body
+    required: false
+    type: boolean
+    default: true
+    description: A flag whether to eliminate non DBpedia classes (except for owl:Thing)
+
+  responses:
+    200:
+      description: The subject column is annotated
+      content:
+        application/json:
+          schema:
+            type: array
+            classes:
+              type: string
+
