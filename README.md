@@ -1,4 +1,4 @@
-# tada_web
+# tada-web
 This is a web API project (with Swagger) using `tada-hdt-entity` and the `pytada-hdt-entity` libraries
 
 

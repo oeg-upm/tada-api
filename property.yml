@@ -1,0 +1,44 @@
+Entity Column Property Annotation
+---
+post:
+  tags:
+  - property
+  parameters:
+  - name: subject_col_id
+    in: formData
+    required: true
+    type: integer
+    description: The id of the subject column (starting from 0).
+  - name: source
+    in: formData
+    required: true
+    type: file
+    description: The input file to be annotated
+  - name: dbpedia_only
+    in: formData
+    required: false
+    type: boolean
+    default: true
+    description: A flag whether to eliminate non DBpedia property
+  - name: k
+    in: formData
+    required: false
+    type: number
+    description: The number of top-k candidates
+
+  responses:
+    200:
+      description: The properties are annotated
+      content:
+        application/json:
+          schema:
+            type: array
+            cols_properties:
+              type: object
+              properties:
+                  type: array
+              header:
+                  type: string
+
+
+

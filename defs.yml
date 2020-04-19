@@ -1,0 +1,27 @@
+swagger: "2.0"
+info:
+  title: Sample API
+  description: API description in Markdown.
+  version: 1.0.0
+host: 127.0.0.1:5000
+schemes:
+  - http
+paths:
+  /subject:
+    post:
+      tags:
+      - "subject"
+      summary: "This is the summary"
+      description: "Optional extended description in Markdown."
+      consumes:
+      - "multipart/form-data"
+      produces:
+      - "application/json"
+      parameters:
+        - in: "formData"
+          name: "col_id"
+          type: "string"
+          required: true
+      responses:
+        200:
+          description: OK
