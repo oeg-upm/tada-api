@@ -26,6 +26,9 @@ import logging
 import util
 
 
+rdfs_label = "http://www.w3.org/2000/01/rdf-schema#label"
+
+
 def set_config(logger, logdir=""):
     if logdir != "":
         handler = logging.FileHandler(logdir)
@@ -143,12 +146,15 @@ def annotate_property_col():
     if 'dbpedia_only' in request.form:
         dbpedia_only = bool(request.form['dbpedia_only'])
     else:
-        dbpedia_only = True
+        dbpedia_only = False
     if 'k' in request.form:
         k = int(request.form['k'])
     else:
         k = None
-
+    if 'class_uri' in request.form:
+        class_uri = request.form['class_uri']
+    else:
+        class_uri = None
     uploaded_dir = save_file(source_file)
     if uploaded_dir:
         ea = EntityAnn(HDT_DIR, "entity.log")
@@ -160,10 +166,15 @@ def annotate_property_col():
         pairs = []
         for prop_id, col_header in enumerate(headers):
             if prop_id==col_id:
+                if dbpedia_only:
+                    j = {'header': col_header, 'properties': []}
+                else:
+                    j = {'header': col_header, 'properties': [rdfs_label]}
+                pairs.append(j)
                 continue
             properties_ptr = ea.annotate_entity_property_column(data, col_id, prop_id);
-            if len(properties_ptr) == 0:
-                properties_ptr = ea.annotate_entity_property_heuristic(data, col_id, prop_id);
+            if len(properties_ptr) == 0 and class_uri is not None:
+                properties_ptr = ea.annotate_entity_property_heuristic(data, class_uri, prop_id);
             properties_all = [str(p) for p in properties_ptr]
             properties = []
             if dbpedia_only:

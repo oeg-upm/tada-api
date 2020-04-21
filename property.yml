@@ -18,13 +18,18 @@ post:
     in: formData
     required: false
     type: boolean
-    default: true
+    default: false
     description: A flag whether to eliminate non DBpedia property
   - name: k
     in: formData
     required: false
     type: number
     description: The number of top-k candidates
+  - name: class_uri
+    in: formData
+    required: false
+    type: string
+    description: The class of the subject column (will use a strict mode if the class is not passed)
 
   responses:
     200:
