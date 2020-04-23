@@ -60,8 +60,8 @@ set_config(logger, logger_dir)
 # swagger = Swagger(app, validation_error_handler=validation_error_inform_error)
 swagger = Swagger(app)
 
-UPLOAD_DIR = 'upload'
-HDT_DIR = 'dbpedia.hdt'
+UPLOAD_DIR = os.path.join(BASE_DIR, 'upload')
+HDT_DIR = os.path.join(BASE_DIR, 'dbpedia.hdt')
 
 
 def validation_error_inform_error(err, data, schema):
@@ -85,13 +85,9 @@ def custom_validation_function(data, schema):
     print(schema)
 
 
-
-
-
 @app.route('/')
 def hello_world():
     return redirect('/apidocs')
-
 
 
 @app.route('/subject', methods=['POST'])
