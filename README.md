@@ -3,8 +3,8 @@ This is a web API project (with Swagger) using `tada-hdt-entity` and the `pytada
 
 
 # Install
-1. Install tada_hdt_entity [here](https://github.com/oeg-upm/pytada-hdt-entity)
-2. pip install -r requirements.txt 
+1. `sudo sh setup.sh`
+2. `pip install -r requirements.txt` 
 
 
 # Run
