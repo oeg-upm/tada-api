@@ -42,9 +42,6 @@ def set_config(logger, logdir=""):
 
 
 
-logger = logging.getLogger(__name__)
-set_config(logger, "web.log")
-
 app = Flask(__name__)
 app.config['SWAGGER'] = {
     'title': 'TADA APIs',
@@ -53,6 +50,13 @@ app.config['SWAGGER'] = {
     #  'doc_dir': './'
 
 }
+
+BASE_DIR = os.path.dirname(app.instance_path)
+logger = logging.getLogger(__name__)
+logger_dir = os.path.join(BASE_DIR, "web.log")
+set_config(logger, logger_dir)
+
+
 # swagger = Swagger(app, validation_error_handler=validation_error_inform_error)
 swagger = Swagger(app)
 
