@@ -207,6 +207,8 @@ def save_file(sourcefile):
 
 if __name__ == '__main__':
     if len(sys.argv) == 2 and sys.argv[1].isdigit():
-        port = int(sys.argv[1])
-        app.run(debug=True, port=port)
-    app.run(debug=True)
+        app.run(debug=True, port=int(sys.argv[1]))
+    elif len(sys.argv) == 3 and sys.argv[2].isdigit():
+        app.run(debug=True, host=sys.argv[1], port=int(sys.argv[2]))
+    else:
+        app.run(debug=True)
