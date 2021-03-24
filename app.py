@@ -128,7 +128,7 @@ def annotate_subject_col():
         c_entities = []
         black_list_uris = get_black_list()
         for e in entities:
-            if e not in black_list_uris():
+            if e not in black_list_uris:
                 c_entities.append(e)
             else:
                 print("ignore blacklist: "+e)
