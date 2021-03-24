@@ -3,6 +3,15 @@
 # tada-web
 This is a web API project (with Swagger) using `tada-hdt-entity` and the `pytada-hdt-entity` libraries
 
+# Example with curl
+```
+curl --location --request POST 'https://api.tada.linkeddata.es/subject' \
+--form 'col_id="1"' \
+--form 'alpha="0.47"' \
+--form 'dbpedia_only="true"' \
+--form 'k="1"' \
+--form 'source=@"t2dv2/5873256_0_7795190905731964989.csv"'
+```
 
 # Install
 1. `sudo sh setup.sh`
