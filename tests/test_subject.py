@@ -45,7 +45,7 @@ class SubjectTests(unittest.TestCase):
         response = self.app.post('/subject', data=data, content_type='multipart/form-data',follow_redirects=True)
         self.assertEqual(response.status_code, 200)
         entities = response.json['entities']
-        self.assertEqual(entities[0],'http://www.w3.org/2002/07/owl#Thing')
+        self.assertEqual(entities[0], 'http://www.w3.org/2002/07/owl#Thing')
 
 
 if __name__ == "__main__":

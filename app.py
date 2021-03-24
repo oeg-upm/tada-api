@@ -124,6 +124,16 @@ def annotate_subject_col():
                     entities.append(thing)
         else:
             entities = entities_all
+
+        c_entities = []
+        black_list_uris = get_black_list()
+        for e in entities:
+            if e not in black_list_uris():
+                c_entities.append(e)
+            else:
+                print("ignore blacklist: "+e)
+        entities = c_entities
+
         if 'k' in request.form:
             k = int(request.form['k'])
             entities = entities[:k]
@@ -203,6 +213,22 @@ def save_file(sourcefile):
         return uploaded_file_dir
     else:
         return None
+
+
+def get_black_list():
+    """
+
+    :return:
+    """
+    uris = []
+    try:
+        bl_dir = os.path.join(BASE_DIR, "blacklist.csv")
+        f = open(bl_dir)
+        for line in f.readlines():
+            uris.append(line)
+    except:
+        print("Exception: backlist.csv is not found in: "+bl_dir)
+    return uris
 
 
 if __name__ == '__main__':

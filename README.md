@@ -30,3 +30,7 @@ To see the list of APIs`http://127.0.0.1:5000/apidocs/`
 ```
 
 
+# To run tests
+```
+python -m unittest discover -s tests
+```
