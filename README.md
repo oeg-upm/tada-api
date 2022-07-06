@@ -1,6 +1,8 @@
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3764197.svg)](https://doi.org/10.5281/zenodo.3764197)
-
 # tada-web
+
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3764197.svg)](https://doi.org/10.5281/zenodo.3764197)
+[![Python 3.6](https://img.shields.io/badge/python-3.9-blue.svg)](https://www.python.org/downloads/release/python-390/)
+
 This is a web API project (with Swagger) using `tada-hdt-entity` and the `pytada-hdt-entity` libraries
 
 # Example with curl
