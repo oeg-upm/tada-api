@@ -5,9 +5,13 @@ import os
 import unittest
 
 import io
+import app as appmod
+
+appmod.HDT_DIR = os.environ['test_hdt_dir']
+
 from app import app
 
-file_source = "tests/aaabasketballplayers.csv"
+file_source = "tests/test6.csv"
 
 
 class SubjectTests(unittest.TestCase):
@@ -28,11 +32,13 @@ class SubjectTests(unittest.TestCase):
         }
         f = open(file_source)
         file_content = f.read()
+        f.close()
+        file_content = file_content.encode('utf-8')
         data['source'] = (io.BytesIO(file_content), 'test.csv')
-        response = self.app.post('/subject', data=data, content_type='multipart/form-data',follow_redirects=True)
+        response = self.app.post('/subject', data=data, content_type='multipart/form-data', follow_redirects=True)
         self.assertEqual(response.status_code, 200)
         entities = response.json['entities']
-        self.assertEqual(entities[0],'http://dbpedia.org/ontology/BasketballPlayer')
+        self.assertEqual(entities[0], 'http://dbpedia.org/ontology/BaseballPlayer')
 
     def test_subject_thing(self):
         data = {
@@ -41,11 +47,13 @@ class SubjectTests(unittest.TestCase):
         }
         f = open(file_source)
         file_content = f.read()
+        f.close()
+        file_content = file_content.encode('utf-8')
         data['source'] = (io.BytesIO(file_content), 'test.csv')
-        response = self.app.post('/subject', data=data, content_type='multipart/form-data',follow_redirects=True)
+        response = self.app.post('/subject', data=data, content_type='multipart/form-data', follow_redirects=True)
         self.assertEqual(response.status_code, 200)
         entities = response.json['entities']
-        self.assertEqual(entities[0], 'http://www.w3.org/2002/07/owl#Thing')
+        self.assertEqual(entities[0], 'http://dbpedia.org/ontology/Agent')
 
 
 if __name__ == "__main__":

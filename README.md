@@ -41,7 +41,13 @@ To see the list of APIs`http://127.0.0.1:5000/apidocs/`
 ```
 
 
+
 # To run tests
-```
-python -m unittest discover -s tests
-```
+1. Download the test.hdt
+2. Set up environment variable `test_hdt_dir` to refer to the location of test.hdt.
+3. Run tests `sh run_tests.sh`
+
+
+## Tests cases
+Test cases and files are taken from [tada-hdt-entity](https://github.com/oeg-upm/tada-hdt-entity)
+

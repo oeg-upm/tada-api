@@ -63,6 +63,9 @@ swagger = Swagger(app)
 UPLOAD_DIR = os.path.join(BASE_DIR, 'upload')
 HDT_DIR = os.path.join(BASE_DIR, 'dbpedia.hdt')
 
+if 'hdt_dir' in os.environ:
+    HDT_DIR = os.environ['hdt_dir']
+
 
 def validation_error_inform_error(err, data, schema):
     """
@@ -93,6 +96,7 @@ def hello_world():
 @app.route('/subject', methods=['POST'])
 @swag_from('subject.yml')
 def annotate_subject_col():
+    # print("HDT_DIR: %s" % HDT_DIR)
     logger.debug("annotate_subject_col> form data: ")
     logger.debug(request.form)
     col_id = int(request.form['col_id'])
@@ -120,7 +124,7 @@ def annotate_subject_col():
             for e in entities_all:
                 if e.startswith('http://dbpedia.org/ontology/'):
                     entities.append(e)
-                elif e==thing:
+                elif e == thing:
                     entities.append(thing)
         else:
             entities = entities_all
@@ -226,8 +230,9 @@ def get_black_list():
         f = open(bl_dir)
         for line in f.readlines():
             uris.append(line)
+        f.close()
     except:
-        print("Exception: backlist.csv is not found in: "+bl_dir)
+        print("Exception: blacklist.csv is not found in: "+bl_dir)
     return uris
 
 

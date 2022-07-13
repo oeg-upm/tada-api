@@ -6,7 +6,6 @@ coverage==5.1
 flasgger==0.9.4
 Flask==1.1.2
 funcsigs==1.0.2
-functools32==3.2.3.post2
 importlib-metadata==1.6.0
 itsdangerous==1.1.0
 Jinja2==2.11.3
