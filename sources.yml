@@ -1,0 +1,14 @@
+Annotation sources
+---
+
+tags:
+- "sources"
+summary: "Annotator sources"
+description: "Get the list of sources available to be used for the annotation."
+consumes:
+- "multipart/form-data"
+produces:
+- "application/json"
+responses:
+  200:
+    description: OK. List of sources is fetched successfully.

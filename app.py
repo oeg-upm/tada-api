@@ -1,11 +1,12 @@
 from tada_hdt_entity.entity import EntityAnn
 from tada_hdt_entity.parser import Parser
 from tada_hdt_entity.entity import deref_list_string
-
+import csv
 from flask import Flask, request, jsonify, render_template, redirect, Response
 from werkzeug.utils import secure_filename
 from werkzeug.exceptions import abort
 from flasgger import swag_from, Swagger, validate
+
 
 try:
     import simplejson as json
@@ -18,11 +19,9 @@ except ImportError:
     import httplib as HTTPStatus
 
 
-
 import sys
 import os
 import logging
-
 import util
 
 
@@ -41,14 +40,12 @@ def set_config(logger, logdir=""):
     return logger
 
 
-
 app = Flask(__name__)
 app.config['SWAGGER'] = {
     'title': 'TADA APIs',
     # 'uiversion': 3,
     # 'openapi': '3.0.2',
     #  'doc_dir': './'
-
 }
 
 BASE_DIR = os.path.dirname(app.instance_path)
@@ -234,6 +231,31 @@ def get_black_list():
     except:
         print("Exception: blacklist.csv is not found in: "+bl_dir)
     return uris
+
+
+def load_sources():
+    """
+    Retrieve the sources from the sources.csv
+    """
+    sources_dir = os.path.join(BASE_DIR, 'sources.csv')
+    sources = []
+    if os.path.exists(sources_dir):
+        with open(sources_dir, 'r') as data:
+            for line in csv.DictReader(data):
+                print(line)
+                sources.append(line)
+    else:
+        print("%s is not found" % sources_dir)
+    return sources
+
+
+@app.route('/sources', methods=['GET'])
+@swag_from('sources.yml',)
+def get_sources():
+    sources = load_sources()
+    for s in sources:
+        del s["source"]
+    return jsonify(sources=sources), 200
 
 
 if __name__ == '__main__':

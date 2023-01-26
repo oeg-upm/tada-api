@@ -24,7 +24,12 @@ curl --location --request POST 'https://api.tada.linkeddata.es/subject' \
 # Run
 `python app.py`
 you can also specify the host IP and the port e.g., `python app.py 0.0.0.0 5001`
-To see the list of APIs`http://127.0.0.1:5000/apidocs/`
+To see the list of APIs`http://127.0.0.1:5001/apidocs/`
+
+# Parameters and Setup
+* `sources.csv`. This file is expected to have the following headers: `id,name,type,source`. The `id` is the one that should be unique, but it won't be visible to the users. The `name` is the name of the source that would be shown to the users. The `type` can be an `HDT` or `SPARQL`. Finally, the `source` is the path (in the case of HDT) or the url (in the case of SPARQL). *Note that only HDT sources are supported at the moment.* 
+
+
 
 # To cite
 ```

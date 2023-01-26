@@ -1,3 +1,4 @@
+sources.csv
 blacklist.csv
 upload/*
 .idea/
