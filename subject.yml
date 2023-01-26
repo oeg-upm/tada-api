@@ -1,35 +1,38 @@
 Subject Column Property Annotation
 ---
-post:
-  tags:
-  - "subject"
-  summary: "This is the summary"
-  description: "Optional extended description in Markdown."
-  consumes:
-  - "multipart/form-data"
-  produces:
-  - "application/json"
-  parameters:
-  - in: "formData"
-    name: "source"
-    type: "file"
-    required: true
-  - in: "formData"
-    name: "col_id"
-    type: "integer"
-    required: true
-  - in: "formData"
-    name: "alpha"
-    type: "float"
-    required: false
-  - in: "formData"
-    name: "dbpedia_only"
-    type: "bool"
-    required: false
-  - in: "formData"
-    name: "k"
-    type: "integer"
-    required: false
-  responses:
-    200:
-      description: OK
+tags:
+- "subject"
+summary: "This is the summary"
+description: "Optional extended description in Markdown."
+consumes:
+- "multipart/form-data"
+produces:
+- "application/json"
+parameters:
+- in: "formData"
+  name: "ann_source"
+  type: "string"
+  required: true
+- in: "formData"
+  name: "source"
+  type: "file"
+  required: true
+- in: "formData"
+  name: "col_id"
+  type: "integer"
+  required: true
+- in: "formData"
+  name: "alpha"
+  type: "float"
+  required: false
+- in: "formData"
+  name: "dbpedia_only"
+  type: "bool"
+  required: false
+- in: "formData"
+  name: "k"
+  type: "integer"
+  required: false
+responses:
+  200:
+    description: OK

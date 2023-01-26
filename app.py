@@ -53,15 +53,9 @@ logger = logging.getLogger(__name__)
 logger_dir = os.path.join(BASE_DIR, "web.log")
 set_config(logger, logger_dir)
 
-
 # swagger = Swagger(app, validation_error_handler=validation_error_inform_error)
 swagger = Swagger(app)
-
 UPLOAD_DIR = os.path.join(BASE_DIR, 'upload')
-HDT_DIR = os.path.join(BASE_DIR, 'dbpedia.hdt')
-
-if 'hdt_dir' in os.environ:
-    HDT_DIR = os.environ['hdt_dir']
 
 
 def validation_error_inform_error(err, data, schema):
@@ -93,7 +87,6 @@ def hello_world():
 @app.route('/subject', methods=['POST'])
 @swag_from('subject.yml')
 def annotate_subject_col():
-    # print("HDT_DIR: %s" % HDT_DIR)
     logger.debug("annotate_subject_col> form data: ")
     logger.debug(request.form)
     col_id = int(request.form['col_id'])
@@ -106,9 +99,13 @@ def annotate_subject_col():
         dbpedia_only = bool(request.form['dbpedia_only'])
     else:
         dbpedia_only = True
+    if 'ann_source' not in request.form:
+        return jsonify(error="ann_source is not passed"), 500
+    annotation_source_id = request.form['ann_source']
     uploaded_dir = save_file(source_file)
     if uploaded_dir:
-        ea = EntityAnn(HDT_DIR, "entity.log", alpha)
+        hdt_source = get_hdt_source(annotation_source_id)
+        ea = EntityAnn(hdt_source["source"], "entity.log", alpha)
         ea.set_language_tag("@en")
         ea.set_title_case(True)
         parser = Parser(uploaded_dir)
@@ -143,7 +140,6 @@ def annotate_subject_col():
         }
         return jsonify(j)
     else:
-        j = {"Error saving the uploaded file"}
         return jsonify(error="error saving the uploaded file"), 500
 
 
@@ -166,9 +162,15 @@ def annotate_property_col():
         class_uri = request.form['class_uri']
     else:
         class_uri = None
+
+    if 'ann_source' not in request.form:
+        return jsonify(error="ann_source is not passed"), 500
+    annotation_source_id = request.form['ann_source']
+
     uploaded_dir = save_file(source_file)
     if uploaded_dir:
-        ea = EntityAnn(HDT_DIR, "entity.log")
+        hdt_source = get_hdt_source(annotation_source_id)
+        ea = EntityAnn(hdt_source["source"], "entity.log")
         ea.set_language_tag("@en")
         ea.set_title_case(True)
         parser = Parser(uploaded_dir)
@@ -231,6 +233,18 @@ def get_black_list():
     except:
         print("Exception: blacklist.csv is not found in: "+bl_dir)
     return uris
+
+
+def get_hdt_source(source_id):
+    """
+    Get source
+    """
+    sources = load_sources()
+    for s in sources:
+        if s["id"] == source_id:
+            return s
+    print("get_hdt_source> source <%s> is not found" % source_id)
+    return ""
 
 
 def load_sources():
