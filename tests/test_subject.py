@@ -1,6 +1,4 @@
 # project/test_basic.py
-
-
 import os
 import unittest
 
@@ -12,17 +10,13 @@ appmod.SOURCES_DIR = None
 from app import app
 
 file_source = "tests/test6.csv"
-
+file_source1 = "tests/test1.csv"
 
 class SubjectTests(unittest.TestCase):
 
     # executed prior to each test
     def setUp(self):
-        # app.config['TESTING'] = True
-        # app.config['WTF_CSRF_ENABLED'] = False
-        # app.config['DEBUG'] = False
         self.app = app.test_client()
-
         self.assertEqual(app.debug, False)
 
     def test_subject(self):

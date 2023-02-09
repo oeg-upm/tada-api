@@ -17,12 +17,6 @@ parameters:
   required: true
   type: file
   description: The input file to be annotated
-- name: dbpedia_only
-  in: formData
-  required: false
-  type: boolean
-  default: false
-  description: A flag whether to eliminate non DBpedia property
 - name: k
   in: formData
   required: false

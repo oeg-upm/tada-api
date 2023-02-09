@@ -99,10 +99,6 @@ def annotate_subject_col():
         alpha = float(request.form['alpha'])
     else:
         alpha = 0.9
-    # if 'dbpedia_only' in request.form:
-    #     dbpedia_only = bool(request.form['dbpedia_only'])
-    # else:
-    #     dbpedia_only = True
     if 'ann_source' not in request.form:
         return jsonify(error="ann_source is not passed"), 500
     annotation_source_id = request.form['ann_source']
@@ -126,21 +122,10 @@ def annotate_subject_col():
             parser = Parser(uploaded_dir)
             data = parser.parse_vertical()
             entities_ptr = ea.annotate_column(data, col_id, True, True)
-            entities_all = [str(e) for e in entities_ptr]
+            entities = [str(e) for e in entities_ptr]
             print("\n\nentities: ")
-            print(entities_all)
-            entities = []
+            print(entities)
             thing = 'http://www.w3.org/2002/07/owl#Thing'
-            # if dbpedia_only:
-            #     print("dbpedia_only")
-            #     for e in entities_all:
-            #         if e.startswith('http://dbpedia.org/ontology/'):
-            #             entities.append(e)
-            #         elif e == thing:
-            #             entities.append(thing)
-            # else:
-            entities = entities_all
-
             c_entities = []
             black_list_uris = get_black_list()
             for e in entities:
@@ -170,14 +155,12 @@ def annotate_property_col():
     logger.debug(request.form)
     col_id = int(request.form['subject_col_id'])
     source_file = request.files['source']
-    if 'dbpedia_only' in request.form:
-        dbpedia_only = bool(request.form['dbpedia_only'])
-    else:
-        dbpedia_only = False
+
     if 'k' in request.form:
         k = int(request.form['k'])
     else:
         k = None
+
     if 'class_uri' in request.form:
         class_uri = request.form['class_uri']
     else:
@@ -191,35 +174,31 @@ def annotate_property_col():
     if uploaded_dir:
         hdt_source = get_hdt_source(annotation_source_id)
         ea = EntityAnn(hdt_source["source"], "entity.log")
-        ea.set_language_tag("@en")
+        # ea.set_language_tag("@en")
         ea.set_title_case(True)
         parser = Parser(uploaded_dir)
         data = parser.parse_vertical()
         headers = util.get_headers_csv(uploaded_dir)
         pairs = []
         for prop_id, col_header in enumerate(headers):
-            if prop_id==col_id:
-                if dbpedia_only:
-                    j = {'header': col_header, 'properties': []}
-                else:
-                    j = {'header': col_header, 'properties': [rdfs_label]}
+            if prop_id==col_id: # if subject column
+                j = {'header': col_header, 'properties': [rdfs_label]}
                 pairs.append(j)
                 continue
-            properties_ptr = ea.annotate_entity_property_column(data, col_id, prop_id);
-            if len(properties_ptr) == 0 and class_uri is not None:
-                properties_ptr = ea.annotate_entity_property_heuristic(data, class_uri, prop_id);
-            properties_all = [str(p) for p in properties_ptr]
-            properties = []
-            if dbpedia_only:
-                for e in properties_all:
-                    if e.startswith('http://dbpedia.org/ontology/'):
-                        properties.append(e)
-            else:
-                properties = properties_all
-            if k is not None:
-                properties = properties[:k]
-            j = {'header': col_header, 'properties': properties}
-            pairs.append(j)
+
+            for lan_tag in ["@en", ""]:
+                properties_ptr = ea.annotate_entity_property_column(data, col_id, prop_id)
+                if len(properties_ptr) == 0 and class_uri is not None:
+                    properties_ptr = ea.annotate_entity_property_heuristic(data, class_uri, prop_id)
+                properties = [str(p) for p in properties_ptr]
+                if k is not None:
+                    properties = properties[:k]
+                j = {'header': col_header, 'properties': properties}
+                pairs.append(j)
+
+                if len(properties) > 0:
+                    break
+
         return jsonify({'cols_properties': pairs})
     else:
         j = {"Error saving the uploaded file"}
