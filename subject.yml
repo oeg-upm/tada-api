@@ -26,10 +26,6 @@ parameters:
   type: "float"
   required: false
 - in: "formData"
-  name: "dbpedia_only"
-  type: "bool"
-  required: false
-- in: "formData"
   name: "k"
   type: "integer"
   required: false

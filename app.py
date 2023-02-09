@@ -26,7 +26,10 @@ import util
 
 
 rdfs_label = "http://www.w3.org/2000/01/rdf-schema#label"
-
+labels = ["http://www.w3.org/2000/01/rdf-schema#label",
+          "http://www.w3.org/2004/02/skos/core#prefLabel",
+          "http://purl.obolibrary.org/obo/IAO_0000118"
+]
 
 def set_config(logger, logdir=""):
     if logdir != "":
@@ -95,33 +98,46 @@ def annotate_subject_col():
         alpha = float(request.form['alpha'])
     else:
         alpha = 0.9
-    if 'dbpedia_only' in request.form:
-        dbpedia_only = bool(request.form['dbpedia_only'])
-    else:
-        dbpedia_only = True
+    # if 'dbpedia_only' in request.form:
+    #     dbpedia_only = bool(request.form['dbpedia_only'])
+    # else:
+    #     dbpedia_only = True
     if 'ann_source' not in request.form:
         return jsonify(error="ann_source is not passed"), 500
     annotation_source_id = request.form['ann_source']
     uploaded_dir = save_file(source_file)
     if uploaded_dir:
         hdt_source = get_hdt_source(annotation_source_id)
+        print("hdt source: %s" % hdt_source["source"])
         ea = EntityAnn(hdt_source["source"], "entity.log", alpha)
-        ea.set_language_tag("@en")
-        ea.set_title_case(True)
+        ea.clear_label_uri()
+        for lab in labels:
+            ea.append_label_uri(lab)
+        lls = ea.get_labels_uris()
+        lls = [str(e) for e in lls]
+        print("get labels: ")
+        print(lls)
+        # ea.set_language_tag("@en")
+        ea.set_language_tag("")
+        # ea.set_title_case(True)
+        ea.set_title_case(False)
         parser = Parser(uploaded_dir)
         data = parser.parse_vertical()
         entities_ptr = ea.annotate_column(data, col_id, True, True)
         entities_all = [str(e) for e in entities_ptr]
+        print("\n\nentities: ")
+        print(entities_all)
         entities = []
         thing = 'http://www.w3.org/2002/07/owl#Thing'
-        if dbpedia_only:
-            for e in entities_all:
-                if e.startswith('http://dbpedia.org/ontology/'):
-                    entities.append(e)
-                elif e == thing:
-                    entities.append(thing)
-        else:
-            entities = entities_all
+        # if dbpedia_only:
+        #     print("dbpedia_only")
+        #     for e in entities_all:
+        #         if e.startswith('http://dbpedia.org/ontology/'):
+        #             entities.append(e)
+        #         elif e == thing:
+        #             entities.append(thing)
+        # else:
+        entities = entities_all
 
         c_entities = []
         black_list_uris = get_black_list()
@@ -220,7 +236,6 @@ def save_file(sourcefile):
 
 def get_black_list():
     """
-
     :return:
     """
     uris = []
