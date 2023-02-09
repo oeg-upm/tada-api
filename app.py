@@ -59,6 +59,7 @@ set_config(logger, logger_dir)
 # swagger = Swagger(app, validation_error_handler=validation_error_inform_error)
 swagger = Swagger(app)
 UPLOAD_DIR = os.path.join(BASE_DIR, 'upload')
+SOURCES_DIR = os.path.join(BASE_DIR, 'sources.csv')
 
 
 def validation_error_inform_error(err, data, schema):
@@ -110,50 +111,53 @@ def annotate_subject_col():
         hdt_source = get_hdt_source(annotation_source_id)
         print("hdt source: %s" % hdt_source["source"])
         ea = EntityAnn(hdt_source["source"], "entity.log", alpha)
-        ea.clear_label_uri()
-        for lab in labels:
-            ea.append_label_uri(lab)
-        lls = ea.get_labels_uris()
-        lls = [str(e) for e in lls]
-        print("get labels: ")
-        print(lls)
-        # ea.set_language_tag("@en")
-        ea.set_language_tag("")
-        # ea.set_title_case(True)
-        ea.set_title_case(False)
-        parser = Parser(uploaded_dir)
-        data = parser.parse_vertical()
-        entities_ptr = ea.annotate_column(data, col_id, True, True)
-        entities_all = [str(e) for e in entities_ptr]
-        print("\n\nentities: ")
-        print(entities_all)
-        entities = []
-        thing = 'http://www.w3.org/2002/07/owl#Thing'
-        # if dbpedia_only:
-        #     print("dbpedia_only")
-        #     for e in entities_all:
-        #         if e.startswith('http://dbpedia.org/ontology/'):
-        #             entities.append(e)
-        #         elif e == thing:
-        #             entities.append(thing)
-        # else:
-        entities = entities_all
+        for lan_tag in ["@en", ""]:
+            ea.clear_label_uri()
+            for lab in labels:
+                ea.append_label_uri(lab)
+            lls = ea.get_labels_uris()
+            lls = [str(e) for e in lls]
+            print("get labels: ")
+            print(lls)
+            # ea.set_language_tag("@en")
+            ea.set_language_tag(lan_tag)
+            ea.set_title_case(True)
+            #ea.set_title_case(False)
+            parser = Parser(uploaded_dir)
+            data = parser.parse_vertical()
+            entities_ptr = ea.annotate_column(data, col_id, True, True)
+            entities_all = [str(e) for e in entities_ptr]
+            print("\n\nentities: ")
+            print(entities_all)
+            entities = []
+            thing = 'http://www.w3.org/2002/07/owl#Thing'
+            # if dbpedia_only:
+            #     print("dbpedia_only")
+            #     for e in entities_all:
+            #         if e.startswith('http://dbpedia.org/ontology/'):
+            #             entities.append(e)
+            #         elif e == thing:
+            #             entities.append(thing)
+            # else:
+            entities = entities_all
 
-        c_entities = []
-        black_list_uris = get_black_list()
-        for e in entities:
-            if e not in black_list_uris:
-                c_entities.append(e)
-            else:
-                print("ignore blacklist: "+e)
-        entities = c_entities
+            c_entities = []
+            black_list_uris = get_black_list()
+            for e in entities:
+                if e not in black_list_uris:
+                    c_entities.append(e)
+                else:
+                    print("ignore blacklist: "+e)
+            entities = c_entities
 
-        if 'k' in request.form:
-            k = int(request.form['k'])
-            entities = entities[:k]
-        j = {
-            "entities": entities,
-        }
+            if 'k' in request.form:
+                k = int(request.form['k'])
+                entities = entities[:k]
+            j = {
+                "entities": entities,
+            }
+            if len(entities) > 0:
+                break
         return jsonify(j)
     else:
         return jsonify(error="error saving the uploaded file"), 500
@@ -266,15 +270,20 @@ def load_sources():
     """
     Retrieve the sources from the sources.csv
     """
-    sources_dir = os.path.join(BASE_DIR, 'sources.csv')
     sources = []
-    if os.path.exists(sources_dir):
-        with open(sources_dir, 'r') as data:
+    # For automated tests
+    if not SOURCES_DIR:
+        d = { "id": "test", "name": "test", "type": "HDT", "source": os.environ['test_hdt_dir']}
+        return [d]
+        # os.environ['test_hdt_dir']
+    # For normal usage (local or production)
+    if os.path.exists(SOURCES_DIR):
+        with open(SOURCES_DIR, 'r') as data:
             for line in csv.DictReader(data):
                 print(line)
                 sources.append(line)
     else:
-        print("%s is not found" % sources_dir)
+        print("%s is not found" % SOURCES_DIR)
     return sources
 
 

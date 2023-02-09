@@ -7,7 +7,7 @@ import unittest
 import io
 import app as appmod
 
-appmod.HDT_DIR = os.environ['test_hdt_dir']
+appmod.SOURCES_DIR = None
 
 from app import app
 
@@ -29,6 +29,7 @@ class SubjectTests(unittest.TestCase):
         data = {
             'col_id': 0,
             'alpha': 0.9,
+            'ann_source': 'test'
         }
         f = open(file_source)
         file_content = f.read()
@@ -36,14 +37,19 @@ class SubjectTests(unittest.TestCase):
         file_content = file_content.encode('utf-8')
         data['source'] = (io.BytesIO(file_content), 'test.csv')
         response = self.app.post('/subject', data=data, content_type='multipart/form-data', follow_redirects=True)
+        print("Response: ")
+        print(response)
+        print(response.data)
         self.assertEqual(response.status_code, 200)
         entities = response.json['entities']
+        self.assertGreater(len(entities), 0)
         self.assertEqual(entities[0], 'http://dbpedia.org/ontology/BaseballPlayer')
 
     def test_subject_thing(self):
         data = {
             'col_id': 0,
             'alpha': 1.0,
+            'ann_source': 'test'
         }
         f = open(file_source)
         file_content = f.read()
@@ -53,6 +59,7 @@ class SubjectTests(unittest.TestCase):
         response = self.app.post('/subject', data=data, content_type='multipart/form-data', follow_redirects=True)
         self.assertEqual(response.status_code, 200)
         entities = response.json['entities']
+        self.assertGreater(len(entities), 0)
         self.assertEqual(entities[0], 'http://dbpedia.org/ontology/Agent')
 
 
