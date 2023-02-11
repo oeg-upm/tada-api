@@ -20,6 +20,8 @@ curl --location --request POST 'https://api.tada.linkeddata.es/subject' \
 2. `pip install git+https://github.com/oeg-upm/pytada-hdt-entity.git`
 3. `pip install -r requirements.txt` 
 
+## Known issues
+On Mac, you might face linked errors. To resolve this you can use `export LIBRARY_PATH=$LIBRARY_PATH:/usr/local/lib` before running pip.
 
 # Run
 `python app.py`
@@ -49,7 +51,7 @@ To see the list of APIs`http://127.0.0.1:5001/apidocs/`
 
 # To run tests
 1. Download the test.hdt
-2. Set up environment variable `test_hdt_dir` to refer to the location of test.hdt.
+2. Set up environment variable `test_hdt_dir` to refer to the location of test.hdt (this is taken from tada-hdt-entity)
 3. Run tests `sh run_tests.sh`
 
 

@@ -6,7 +6,7 @@ from flask import Flask, request, jsonify, render_template, redirect, Response
 from werkzeug.utils import secure_filename
 from werkzeug.exceptions import abort
 from flasgger import swag_from, Swagger, validate
-
+import traceback
 
 try:
     import simplejson as json
@@ -107,24 +107,21 @@ def annotate_subject_col():
         hdt_source = get_hdt_source(annotation_source_id)
         print("hdt source: %s" % hdt_source["source"])
         ea = EntityAnn(hdt_source["source"], "entity.log", alpha)
+        ea.clear_label_uri()
+
+        for lab in labels:
+            ea.append_label_uri(lab)
+
+        parser = Parser(uploaded_dir)
+        data = parser.parse_vertical()
+
         for lan_tag in ["@en", ""]:
-            ea.clear_label_uri()
-            for lab in labels:
-                ea.append_label_uri(lab)
-            lls = ea.get_labels_uris()
-            lls = [str(e) for e in lls]
-            print("get labels: ")
-            print(lls)
-            # ea.set_language_tag("@en")
             ea.set_language_tag(lan_tag)
             ea.set_title_case(True)
-            #ea.set_title_case(False)
-            parser = Parser(uploaded_dir)
-            data = parser.parse_vertical()
+            print("col_id: %d" % col_id)
+
             entities_ptr = ea.annotate_column(data, col_id, True, True)
             entities = [str(e) for e in entities_ptr]
-            print("\n\nentities: ")
-            print(entities)
             thing = 'http://www.w3.org/2002/07/owl#Thing'
             c_entities = []
             black_list_uris = get_black_list()
@@ -142,7 +139,10 @@ def annotate_subject_col():
                 "entities": entities,
             }
             if len(entities) > 0:
+                print("Breaking")
                 break
+            else:
+                print("No entities")
         return jsonify(j)
     else:
         return jsonify(error="error saving the uploaded file"), 500
@@ -174,7 +174,6 @@ def annotate_property_col():
     if uploaded_dir:
         hdt_source = get_hdt_source(annotation_source_id)
         ea = EntityAnn(hdt_source["source"], "entity.log")
-        # ea.set_language_tag("@en")
         ea.set_title_case(True)
         parser = Parser(uploaded_dir)
         data = parser.parse_vertical()
@@ -187,17 +186,22 @@ def annotate_property_col():
                 continue
 
             for lan_tag in ["@en", ""]:
+                ea.set_language_tag(lan_tag)
                 properties_ptr = ea.annotate_entity_property_column(data, col_id, prop_id)
+
                 if len(properties_ptr) == 0 and class_uri is not None:
                     properties_ptr = ea.annotate_entity_property_heuristic(data, class_uri, prop_id)
+
                 properties = [str(p) for p in properties_ptr]
+
                 if k is not None:
                     properties = properties[:k]
+
                 j = {'header': col_header, 'properties': properties}
                 pairs.append(j)
 
-                if len(properties) > 0:
-                    break
+                # if len(properties) > 0:
+                #     break
 
         return jsonify({'cols_properties': pairs})
     else:
