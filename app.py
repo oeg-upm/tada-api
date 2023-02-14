@@ -163,6 +163,7 @@ def annotate_property_col():
 
     if 'class_uri' in request.form:
         class_uri = request.form['class_uri']
+
     else:
         class_uri = None
 
